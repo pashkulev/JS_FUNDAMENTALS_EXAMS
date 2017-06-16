@@ -4,7 +4,7 @@ function collectNotebookData(sheets) {
         let sheetTokens = sheet.split('|');
         let color = sheetTokens[0];
         if (!colorMap.has(color)) {
-            colorMap.set(color, {wins: 0, losses: 0})
+            colorMap.set(color, {wins: 0, losses: 0, age: '', name: "", opponents: []})
         }
 
         switch (sheetTokens[1]) {
@@ -12,16 +12,10 @@ function collectNotebookData(sheets) {
             case 'age': colorMap.get(color)['age'] = sheetTokens[2]; break;
             case 'win':
                 colorMap.get(color).wins++;
-                if (!colorMap.get(color).hasOwnProperty('opponents')) {
-                    colorMap.get(color).opponents = [];
-                }
                 colorMap.get(color).opponents.push(sheetTokens[2]);
                 break;
             case 'loss':
                 colorMap.get(color).losses++;
-                if (!colorMap.get(color).hasOwnProperty('opponents')) {
-                    colorMap.get(color).opponents = [];
-                }
                 colorMap.get(color).opponents.push(sheetTokens[2]);
                 break;
         }
@@ -29,21 +23,17 @@ function collectNotebookData(sheets) {
 
     let output = '{';
     for (let [color, value] of colorMap) {
-        if (!value.hasOwnProperty('name') || !value.hasOwnProperty('age')) {
+        if (value.name === '' || value.age === '') {
             continue;
         }
 
         value.rank = ((value.wins + 1) / (value.losses + 1)).toFixed(2);
-        if (value.hasOwnProperty('opponents')) {
-            value.opponents.sort((o1, o2) => o1.localeCompare(o2));
-        } else {
-            value.opponents = [];
-        }
+        value.opponents.sort((o1, o2) => o1.localeCompare(o2));
 
         delete value.wins;
         delete value.losses;
 
-        output += `"${color}":{"age":"${value.age}","name":"${value.name}","opponents":${JSON.stringify(value.opponents)},"rank":"${value.rank}"},`;
+        output += `"${color}":${JSON.stringify(value)},`;
     }
 
     output = output.slice(0, output.length - 1) + "}";
