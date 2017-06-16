@@ -1,4 +1,5 @@
 function ajaxRequestValidator(input) {
+    input = input.filter(e => e !== "")
     let hashPattern = input.pop();
 
     let validMethodRegex = /^Method:\s(GET|POST|PUT|DELETE)$/;
@@ -39,20 +40,21 @@ function ajaxRequestValidator(input) {
 
         if (authorizationType === "Basic" &&
             (methodType === "PUT" || methodType === "POST" || methodType === "DELETE")) {
-            console.log(`Response–Method:${methodType}&Code:401`);
+            console.log(`Response-Method:${methodType}&Code:401`);
             continue;
         }
 
         if (isValidAuthorization(authorizationToken, hashPattern)) {
-            console.log(`Response–Method:${methodType}&Code:200&Header:${authorizationToken}`);
+            console.log(`Response-Method:${methodType}&Code:200&Header:${authorizationToken}`);
         } else {
-            console.log(`Response–Method:${methodType}&Code:403`);
+            console.log(`Response-Method:${methodType}&Code:403`);
         }
     }
 
     function isValidAuthorization(authorization, hashPattern) {
         for (let i = 0; i < hashPattern.length; i += 2) {
             let digit = Number(hashPattern.charAt(i));
+            if (i + 1 >= hashPattern.length) break;
             let letter = hashPattern.charAt(i + 1);
             let matches = authorization.match(new RegExp(`${letter}`, 'g'));
             if (matches !== undefined && matches.length === digit) {
