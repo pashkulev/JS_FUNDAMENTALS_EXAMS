@@ -54,7 +54,6 @@ function ajaxRequestValidator(input) {
     function isValidAuthorization(authorization, hashPattern) {
         for (let i = 0; i < hashPattern.length; i += 2) {
             let digit = Number(hashPattern.charAt(i));
-            if (i + 1 >= hashPattern.length) break;
             let letter = hashPattern.charAt(i + 1);
             let matches = authorization.match(new RegExp(`${letter}`, 'g'));
             if (matches !== undefined && matches.length === digit) {
